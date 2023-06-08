@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class TaskManager {
     static final String FILE_NAME = "tasks.csv";
@@ -39,6 +40,9 @@ public class TaskManager {
                     break;
                 case "add" :
                     add();
+                    break;
+                case "remove" :
+                    remove();
                     break;
                 default:
                     System.out.println("Please select a correct option. ");
@@ -72,9 +76,9 @@ public class TaskManager {
 
     public static void list(String[][] tab) {
        for (int i = 0; i < tab.length; i++) {
-           System.out.println(i + " : ");
+           System.out.print(i + 1 + " : ");
            for(int j = 0; j < tab[i].length; j++) {
-               System.out.println(tab[i][j] + " ");
+               System.out.print(tab[i][j] + " ");
            }
            System.out.println();
        }
@@ -96,4 +100,11 @@ public class TaskManager {
         tasks[tasks.length -1][1] = listArr[1];
         tasks[tasks.length -1][2] = listArr[2];
         }
+
+    public static void remove() { //dodać obsługę wyjątku indexOutOfBoundExeption oraz InputMismatchException
+    Scanner scan = new Scanner(System.in);
+        System.out.println("Please select number to remove: ");
+        tasks = ArrayUtils.remove(tasks, scan.nextInt() - 1);
+    }
 }
+
