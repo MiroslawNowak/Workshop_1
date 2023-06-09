@@ -3,23 +3,20 @@ package pl.coderslab;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.nio.file.*;
+import java.util.*;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 public class TaskManager {
     static final String FILE_NAME = "tasks.csv";
     static final String[] OPTIONS = {"add", "remove", "list", "exit"};
     static String[][] tasks;
+    
     public static void main(String[] args) {
         tasks = getData(FILE_NAME);
         printOptions(OPTIONS);
         optionSelector();
-
     }
 
     public static void printOptions(String[] tab) {
@@ -36,13 +33,22 @@ public class TaskManager {
             String input = scan.nextLine();
             switch (input)  {
                 case "list" :
+                    System.out.println("List of tasks: ");
                     list(tasks);
                     break;
                 case "add" :
                     add();
+                    System.out.println("Row successfully added!");
                     break;
                 case "remove" :
                     remove();
+                    System.out.println("Row successfully removed!");
+                    break;
+                case "exit" :
+                    exit(tasks,FILE_NAME);
+                    System.out.println("Successfully saved.");
+                    System.out.println(ConsoleColors.RED + "Bye, bye.");
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Please select a correct option. ");
@@ -61,7 +67,6 @@ public class TaskManager {
         try {
             List<String> listOfStrings = Files.readAllLines(dir);
             lines = new String[listOfStrings.size()][listOfStrings.get(0).split(",").length];
-
             for (int i = 0; i < listOfStrings.size(); i++) {
                 String[] split = listOfStrings.get(i).split(",");
                 for (int j = 0; j < split.length; j++) {
@@ -72,7 +77,7 @@ public class TaskManager {
             e.getMessage();
         }
         return lines;
-        }
+    }
 
     public static void list(String[][] tab) {
        for (int i = 0; i < tab.length; i++) {
@@ -93,18 +98,34 @@ public class TaskManager {
         listArr[1] = scan.nextLine();
         System.out.println("Is your task is important: true/false: ");
         listArr[2] = scan.nextLine();
-
         tasks = Arrays.copyOf(tasks, tasks.length + 1);
         tasks[tasks.length -1] = new String[3];
         tasks[tasks.length -1][0] = listArr[0];
         tasks[tasks.length -1][1] = listArr[1];
         tasks[tasks.length -1][2] = listArr[2];
-        }
+    }
 
-    public static void remove() { //dodać obsługę wyjątku indexOutOfBoundExeption oraz InputMismatchException
+    public static void remove() {
     Scanner scan = new Scanner(System.in);
         System.out.println("Please select number to remove: ");
-        tasks = ArrayUtils.remove(tasks, scan.nextInt() - 1);
+        try {
+            tasks = ArrayUtils.remove(tasks, scan.nextInt() - 1);
+        } catch (InputMismatchException | IndexOutOfBoundsException e) {
+            System.out.println("Unknown record, type number greater or equal zero.");
+        }
+    }
+
+    public static void exit(String [][] tab, String fileName) {
+        Path path = Paths.get(fileName);
+        String[] lines = new String[tab.length];
+        for (int i = 0; i < tab.length; i++) {
+            lines[i] = String.join(",", tab[i]);
+        }
+        try {
+            Files.write(path, Arrays.asList(lines));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
 
