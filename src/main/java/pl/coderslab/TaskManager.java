@@ -12,7 +12,7 @@ public class TaskManager {
     static final String FILE_NAME = "tasks.csv";
     static final String[] OPTIONS = {"add", "remove", "list", "exit"};
     static String[][] tasks;
-    
+
     public static void main(String[] args) {
         tasks = getData(FILE_NAME);
         printOptions(OPTIONS);
